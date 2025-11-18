@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITCA-FEPADE - Física I - Parcial #3</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --accent-color: #198754;
+            --light-bg: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .header-section {
+            background: linear-gradient(135deg, #1a3a8f 0%, #0d6efd 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+            padding: 1rem 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            border-radius: 8px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .result-box {
+            background-color: #e9f7ef;
+            border-left: 4px solid var(--accent-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .step-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .exercise-title {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-box {
+            background-color: #e7f1ff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <!-- Encabezado -->
+    <div class="header-section">
+        <h1 class="text-center mb-3">ITCA-FEPADE</h1>
+        <h3 class="text-center mb-2">Escuela Especializada en Ingeniería</h3>
+        <h4 class="text-center mb-3">Escuela de Educación Dual</h4>
+        <h2 class="text-center mb-4">Física I - Parcial #3</h2>
+        <div class="row text-center">
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Docente:</strong> Argelia María Gámar Rodríguez</p>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Ciclo:</strong> SIGLO 1 - 2025</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Panel de selección y parámetros -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Configuración del ejercicio</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="ejercicio" class="form-label">Selecciona el ejercicio:</label>
+                        <select id="ejercicio" class="form-select">
+                            <option value="1">1 — Lámpara colgante (tensión)</option>
+                            <option value="2">2 — Sistema de tres cuerdas (equilibrio)</option>
+                            <option value="3">3 — Dos bloques con polea</option>
+                            <option value="4">4 — Tres bloques (velocidad constante)</option>
+                            <option value="5">5 — Bloque en plano inclinado</option>
+                        </select>
+                    </div>
+
+                    <div id="params" class="mb-3">
+                        <!-- Parámetros dinámicos se cargarán aquí -->
+                    </div>
+
+                    <div class="d-grid">
+                        <button id="resolver" class="btn btn-primary">Resolver ejercicio</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h6>Información importante:</h6>
+                <p class="mb-0">Todos los cálculos utilizan g = 9.81 m/s² como aceleración gravitacional, a menos que se especifique lo contrario.</p>
+            </div>
+        </div>
+
+        <!-- Panel de resultados -->
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Resultados y procedimiento</h5>
+                </div>
+                <div class="card-body">
+                    <div id="resultado">
+                        <p class="text-center text-muted">Selecciona un ejercicio y haz clic en "Resolver" para ver los resultados.</p>
+                    </div>
+
+                    <div id="pasos" class="mt-4">
+                        <!-- Pasos del procedimiento se mostrarán aquí -->
+                    </div>
+
+                    <div class="mt-4">
+                        <canvas id="grafica" style="display: none;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>ITCA-FEPADE - Física I - Parcial #3 - Módulo: Leyes de Newton</p>
+    </footer>
+</div>
+
+<script>
+    // Constantes
+    const g = 9.81; // Aceleración gravitacional en m/s²
+
+    // Elementos DOM
+    const paramsDiv = document.getElementById('params');
+    const ejercicioSel = document.getElementById('ejercicio');
+    const resultadoDiv = document.getElementById('resultado');
+    const pasosDiv = document.getElementById('pasos');
+    const graficaCanvas = document.getElementById('grafica');
+    const resolverBtn = document.getElementById('resolver');
+
+    let chart = null;
+
+    // Función para cargar parámetros según el ejercicio seleccionado
+    function loadParams() {
+        const ejercicio = ejercicioSel.value;
+
+        if (ejercicio === '1') {
+            setParamsHtml(`
+                    <div class="mb-3">
+                        <label for="m1" class="form-label">Masa de la lámpara (kg)</label>
+                        <input id="m1" type="number" class="form-control" value="25" min="0" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="gval" class="form-label">Aceleración gravitacional (m/s²)</label>
+                        <input id="gval" type="number" class="form-control" value="9.81" min="0" step="0.1">
+                    </div>
+                `);
+        } else if (ejercicio === '2') {
+            setParamsHtml(`
+                    <div class="mb-3">
+                        <label for="peso" class="form-label">Peso del objeto (N)</label>
+                        <input id="peso" type="number" class="form-control" value="250" min="0" step="1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="a1" class="form-label">Ángulo de la cuerda 1 (°)</label>
+                        <input id="a1" type="number" class="form-control" value="40" min="0" max="90" step="1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="a2" class="form-label">Ángulo de la cuerda 2 (°)</label>
+                        <input id="a2" type="number" class="form-control" value="45" min="0" max="90" step="1">
+                    </div>
+                    <div class="alert alert-info small">
+                        <strong>Nota:</strong> Las dos cuerdas forman ángulos con el techo y la tercera cuerda es vertical.
+                    </div>
+                `);
+        } else if (ejercicio === '3') {
+            setParamsHtml(`
+                    <div class="mb-3">
+                        <label for="m1_3" class="form-label">Masa m₁ (kg) - superficie horizontal</label>
+                        <input id="m1_3" type="number" class="form-control" value="20" min="0" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="m2_3" class="form-label">Masa m₂ (kg) - colgando verticalmente</label>
+                        <input id="m2_3" type="number" class="form-control" value="15" min="0" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="F_3" class="form-label">Fuerza externa aplicada (N)</label>
+                        <input id="F_3" type="number" class="form-control" value="20" min="0" step="1">
+                    </div>
+                `);
+        } else if (ejercicio === '4') {
+            setParamsHtml(`
+                    <div class="mb-3">
+                        <label for="mAB" class="form-label">Masa de los bloques A y B (kg)</label>
+                        <input id="mAB" type="number" class="form-control" value="12" min="0" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="F4" class="form-label">Fuerza aplicada al bloque A (N)</label>
+                        <input id="F4" type="number" class="form-control" value="10" min="0" step="1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="theta4" class="form-label">Ángulo del plano inclinado (°)</label>
+                        <input id="theta4" type="number" class="form-control" value="30" min="0" max="90" step="1">
+                    </div>
+                `);
+        } else if (ejercicio === '5') {
+            setParamsHtml(`
+                    <div class="mb-3">
+                        <label for="m5" class="form-label">Masa del bloque (kg)</label>
+                        <input id="m5" type="number" class="form-control" value="15" min="0" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="h5" class="form-label">Altura del plano inclinado (m)</label>
+                        <input id="h5" type="number" class="form-control" value="15" min="0" step="0.1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="theta5" class="form-label">Ángulo del plano inclinado (°)</label>
+                        <input id="theta5" type="number" class="form-control" value="20" min="0" max="90" step="1">
+                    </div>
+                `);
+        }
+    }
+
+    // Función auxiliar para establecer HTML en el div de parámetros
+    function setParamsHtml(html) {
+        paramsDiv.innerHTML = html;
+    }
+
+    // Función para limpiar resultados y gráficas
+    function limpiarResultados() {
+        resultadoDiv.innerHTML = '';
+        pasosDiv.innerHTML = '';
+        if (chart) {
+            chart.destroy();
+            chart = null;
+        }
+        graficaCanvas.style.display = 'none';
+    }
+
+    // Función para mostrar un paso en el procedimiento
+    function mostrarPaso(texto) {
+        const div = document.createElement('div');
+        div.className = 'step-box';
+        div.textContent = texto;
+        pasosDiv.appendChild(div);
+    }
+
+    // Función principal para resolver ejercicios
+    function resolverEjercicio() {
+        limpiarResultados();
+        const ejercicio = ejercicioSel.value;
+
+        if (ejercicio === '1') {
+            resolverEjercicio1();
+        } else if (ejercicio === '2') {
+            resolverEjercicio2();
+        } else if (ejercicio === '3') {
+            resolverEjercicio3();
+        } else if (ejercicio === '4') {
+            resolverEjercicio4();
+        } else if (ejercicio === '5') {
+            resolverEjercicio5();
+        }
+    }
+
+    // Implementación de cada ejercicio
+    function resolverEjercicio1() {
+        const m = parseFloat(document.getElementById('m1').value);
+        const gVal = parseFloat(document.getElementById('gval').value);
+
+        if (isNaN(m) || isNaN(gVal) || m <= 0 || gVal <= 0) {
+            resultadoDiv.innerHTML = '<div class="alert alert-danger">Por favor, ingresa valores válidos para masa y gravedad.</div>';
+            return;
+        }
+
+        const T = m * gVal;
+
+        resultadoDiv.innerHTML = `
+                <h4 class="exercise-title">Ejercicio 1: Lámpara colgante</h4>
+                <div class="result-box">
+                    <h5>Resultado:</h5>
+                    <p><strong>Tensión en el alambre: ${T.toFixed(2)} N</strong></p>
+                </div>
+            `;
+
+        mostrarPaso('1. Diagrama de cuerpo libre: La lámpara está en equilibrio estático.');
+        mostrarPaso('2. Las fuerzas que actúan sobre la lámpara son:');
+        mostrarPaso('   - Peso (W): hacia abajo, W = m × g');
+        mostrarPaso('   - Tensión (T): hacia arriba');
+        mostrarPaso(`3. Aplicando la primera ley de Newton: ∑F_y = 0`);
+        mostrarPaso(`   T - W = 0 ⇒ T = W = m × g`);
+        mostrarPaso(`4. Sustituyendo valores: T = ${m} kg × ${gVal} m/s² = ${T.toFixed(2)} N`);
+    }
+
+    function resolverEjercicio2() {
+        const P = parseFloat(document.getElementById('peso').value);
+        const a1 = parseFloat(document.getElementById('a1').value) * Math.PI / 180;
+        const a2 = parseFloat(document.getElementById('a2').value) * Math.PI / 180;
+
+        if (isNaN(P) || isNaN(a1) || isNaN(a2) || P <= 0 || a1 <= 0 || a2 <= 0) {
+            resultadoDiv.innerHTML = '<div class="alert alert-danger">Por favor, ingresa valores válidos para peso y ángulos.</div>';
+            return;
+        }
+
+        // Resolver sistema de ecuaciones
+        // ∑Fx = 0: T1*cos(a1) = T2*cos(a2)  => T1 = T2 * cos(a2)/cos(a1)
+        // ∑Fy = 0: T1*sin(a1) + T2*sin(a2) = P
+
+        const ratio = Math.cos(a2) / Math.cos(a1);
+        const T2 = P / (ratio * Math.sin(a1) + Math.sin(a2));
+        const T1 = T2 * ratio;
+        const T3 = P; // Tercera cuerda vertical
+
+        resultadoDiv.innerHTML = `
+                <h4 class="exercise-title">Ejercicio 2: Sistema de tres cuerdas</h4>
+                <div class="result-box">
+                    <h5>Resultados:</h5>
+                    <p><strong>Tensión en cuerda 1: ${T1.toFixed(2)} N</strong></p>
+                    <p><strong>Tensión en cuerda 2: ${T2.toFixed(2)} N</strong></p>
+                    <p><strong>Tensión en cuerda 3: ${T3.toFixed(2)} N</strong></p>
+                </div>
+            `;
+
+        mostrarPaso('1. Diagrama de cuerpo libre: El objeto está en equilibrio estático.');
+        mostrarPaso('2. Las fuerzas que actúan son:');
+        mostrarPaso('   - Peso (P): hacia abajo');
+        mostrarPaso('   - Tensión T1: con ángulo α₁ respecto al techo');
+        mostrarPaso('   - Tensión T2: con ángulo α₂ respecto al techo');
+        mostrarPaso('   - Tensión T3: vertical hacia arriba');
+        mostrarPaso('3. Aplicando la primera ley de Newton:');
+        mostrarPaso('   ∑F_x = 0: T₁·cos(α₁) - T₂·cos(α₂) = 0');
+        mostrarPaso('   ∑F_y = 0: T₁·sin(α₁) + T₂·sin(α₂) - P = 0');
+        mostrarPaso('4. Resolviendo el sistema de ecuaciones:');
+        mostrarPaso(`   De ∑F_x: T₁ = T₂ · cos(${(a2 * 180 / Math.PI).toFixed(1)}°) / cos(${(a1 * 180 / Math.PI).toFixed(1)}°)`);
+        mostrarPaso(`   Sustituyendo en ∑F_y: T₂ = ${P} N / (${ratio.toFixed(4)} × sin(${(a1 * 180 / Math.PI).toFixed(1)}°) + sin(${(a2 * 180 / Math.PI).toFixed(1)}°))`);
+        mostrarPaso(`   T₂ = ${T2.toFixed(2)} N`);
+        mostrarPaso(`   T₁ = ${T2.toFixed(2)} N × ${ratio.toFixed(4)} = ${T1.toFixed(2)} N`);
+        mostrarPaso(`   T₃ = P = ${P} N`);
+    }
+
+    function resolverEjercicio3() {
+        const m1 = parseFloat(document.getElementById('m1_3').value);
+        const m2 = parseFloat(document.getElementById('m2_3').value);
+        const F = parseFloat(document.getElementById('F_3').value);
+
+        if (isNaN(m1) || isNaN(m2) || isNaN(F) || m1 <= 0 || m2 <= 0) {
+            resultadoDiv.innerHTML = '<div class="alert alert-danger">Por favor, ingresa valores válidos para masas y fuerza.</div>';
+            return;
+        }
+
+        // Ecuaciones:
+        // Para m1: F - T = m1 * a
+        // Para m2: T - m2 * g = m2 * a
+        // Sumando: F - m2 * g = (m1 + m2) * a
+
+        const a = (F - m2 * g) / (m1 + m2);
+        const T = F - m1 * a;
+
+        resultadoDiv.innerHTML = `
+                <h4 class="exercise-title">Ejercicio 3: Dos bloques con polea</h4>
+                <div class="result-box">
+                    <h5>Resultados:</h5>
+                    <p><strong>Aceleración del sistema: ${a.toFixed(2)} m/s²</strong></p>
+                    <p><strong>Tensión en la cuerda: ${T.toFixed(2)} N</strong></p>
+                </div>
+            `;
+
+        mostrarPaso('1. Diagrama de cuerpo libre para cada bloque:');
+        mostrarPaso('   - Bloque m₁: Fuerza F hacia la derecha, Tensión T hacia la izquierda');
+        mostrarPaso('   - Bloque m₂: Peso m₂·g hacia abajo, Tensión T hacia arriba');
+        mostrarPaso('2. Aplicando la segunda ley de Newton:');
+        mostrarPaso('   Para m₁: F - T = m₁·a');
+        mostrarPaso('   Para m₂: T - m₂·g = m₂·a');
+        mostrarPaso('3. Resolviendo el sistema de ecuaciones:');
+        mostrarPaso(`   Sumando ambas ecuaciones: F - m₂·g = (m₁ + m₂)·a`);
+        mostrarPaso(`   a = (${F} N - ${m2} kg × ${g} m/s²) / (${m1} kg + ${m2} kg)`);
+        mostrarPaso(`   a = ${a.toFixed(2)} m/s²`);
+        mostrarPaso(`4. Calculando la tensión: T = F - m₁·a`);
+        mostrarPaso(`   T = ${F} N - ${m1} kg × ${a.toFixed(2)} m/s² = ${T.toFixed(2)} N`);
+
+        // Crear gráfica de movimiento
+        if (chart) chart.destroy();
+        graficaCanvas.style.display = 'block';
+
+        const tiempoFinal = 5; // segundos
+        const numPuntos = 50;
+        const dt = tiempoFinal / (numPuntos - 1);
+
+        const labels = [];
+        const velocidad = [];
+        const posicion = [];
+
+        for (let i = 0; i < numPuntos; i++) {
+            const t = i * dt;
+            labels.push(t.toFixed(1));
+            velocidad.push((a * t).toFixed(2));
+            posicion.push((0.5 * a * t * t).toFixed(2));
+        }
+
+        chart = new Chart(graficaCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'Velocidad (m/s)',
+                        data: velocidad,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Posición (m)',
+                        data: posicion,
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tiempo (s)'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Velocidad (m/s)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Posición (m)'
+                        },
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                    }
+                }
+            }
+        });
+    }
+
+    function resolverEjercicio4() {
+        const m = parseFloat(document.getElementById('mAB').value);
+        const F = parseFloat(document.getElementById('F4').value);
+        const theta = parseFloat(document.getElementById('theta4').value) * Math.PI / 180;
+
+        if (isNaN(m) || isNaN(F) || isNaN(theta) || m <= 0) {
+            resultadoDiv.innerHTML = '<div class="alert alert-danger">Por favor, ingresa valores válidos para masa, fuerza y ángulo.</div>';
+            return;
+        }
+
+        // Como el sistema se mueve con velocidad constante, a = 0
+        // Para A: F - T1 = 0 => T1 = F
+        // Para B: T1 - T2 - m*g*sin(theta) = 0 => T2 = T1 - m*g*sin(theta)
+        // Para C: T2 = mC*g => mC = T2/g
+
+        const T1 = F;
+        const T2 = T1 - m * g * Math.sin(theta);
+        const mC = T2 / g;
+
+        resultadoDiv.innerHTML = `
+                <h4 class="exercise-title">Ejercicio 4: Tres bloques con velocidad constante</h4>
+                <div class="result-box">
+                    <h5>Resultados:</h5>
+                    <p><strong>Tensión T₁: ${T1.toFixed(2)} N</strong></p>
+                    <p><strong>Tensión T₂: ${T2.toFixed(2)} N</strong></p>
+                    <p><strong>Masa del bloque C: ${mC.toFixed(2)} kg</strong></p>
+                    <p><strong>Peso del bloque C: ${(mC * g).toFixed(2)} N</strong></p>
+                </div>
+            `;
+
+        mostrarPaso('1. Condición: el sistema se mueve con velocidad constante ⇒ aceleración a = 0');
+        mostrarPaso('2. Aplicando la primera ley de Newton a cada bloque:');
+        mostrarPaso('   - Bloque A (horizontal): F - T₁ = 0 ⇒ T₁ = F');
+        mostrarPaso(`   T₁ = ${F} N`);
+        mostrarPaso('   - Bloque B (plano inclinado): T₁ - T₂ - m·g·sin(θ) = 0');
+        mostrarPaso(`   T₂ = T₁ - m·g·sin(θ) = ${F} N - ${m} kg × ${g} m/s² × sin(${(theta * 180 / Math.PI).toFixed(1)}°)`);
+        mostrarPaso(`   T₂ = ${T2.toFixed(2)} N`);
+        mostrarPaso('   - Bloque C (vertical): T₂ = m_C·g');
+        mostrarPaso(`   m_C = T₂ / g = ${T2.toFixed(2)} N / ${g} m/s² = ${mC.toFixed(2)} kg`);
+    }
+
+    function resolverEjercicio5() {
+        const m = parseFloat(document.getElementById('m5').value);
+        const h = parseFloat(document.getElementById('h5').value);
+        const theta = parseFloat(document.getElementById('theta5').value) * Math.PI / 180;
+
+        if (isNaN(m) || isNaN(h) || isNaN(theta) || m <= 0 || h <= 0) {
+            resultadoDiv.innerHTML = '<div class="alert alert-danger">Por favor, ingresa valores válidos para masa, altura y ángulo.</div>';
+            return;
+        }
+
+        // Aceleración en plano inclinado sin fricción: a = g * sin(theta)
+        // Velocidad final: v = sqrt(2 * g * h) (conservación de energía)
+
+        const a = g * Math.sin(theta);
+        const v = Math.sqrt(2 * g * h);
+        const L = h / Math.sin(theta); // Longitud del plano inclinado
+
+        resultadoDiv.innerHTML = `
+                <h4 class="exercise-title">Ejercicio 5: Bloque en plano inclinado</h4>
+                <div class="result-box">
+                    <h5>Resultados:</h5>
+                    <p><strong>Aceleración del bloque: ${a.toFixed(2)} m/s²</strong></p>
+                    <p><strong>Velocidad en el punto más bajo: ${v.toFixed(2)} m/s</strong></p>
+                    <p><strong>Longitud del plano inclinado: ${L.toFixed(2)} m</strong></p>
+                </div>
+            `;
+
+        mostrarPaso('1. Diagrama de cuerpo libre:');
+        mostrarPaso('   - Componente del peso paralela al plano: m·g·sin(θ)');
+        mostrarPaso('   - No hay fricción');
+        mostrarPaso('2. Aplicando la segunda ley de Newton:');
+        mostrarPaso('   m·a = m·g·sin(θ) ⇒ a = g·sin(θ)');
+        mostrarPaso(`   a = ${g} m/s² × sin(${(theta * 180 / Math.PI).toFixed(1)}°) = ${a.toFixed(2)} m/s²`);
+        mostrarPaso('3. Usando conservación de energía:');
+        mostrarPaso('   Energía potencial inicial = Energía cinética final');
+        mostrarPaso('   m·g·h = ½·m·v² ⇒ v = √(2·g·h)');
+        mostrarPaso(`   v = √(2 × ${g} m/s² × ${h} m) = ${v.toFixed(2)} m/s`);
+        mostrarPaso('4. Longitud del plano inclinado:');
+        mostrarPaso('   L = h / sin(θ)');
+        mostrarPaso(`   L = ${h} m / sin(${(theta * 180 / Math.PI).toFixed(1)}°) = ${L.toFixed(2)} m`);
+
+        // Crear gráfica de velocidad vs posición
+        if (chart) chart.destroy();
+        graficaCanvas.style.display = 'block';
+
+        const numPuntos = 50;
+        const posiciones = [];
+        const velocidades = [];
+
+        for (let i = 0; i <= numPuntos; i++) {
+            const x = L * (i / numPuntos);
+            const vx = Math.sqrt(2 * g * (x * Math.sin(theta)));
+            posiciones.push(x.toFixed(2));
+            velocidades.push(vx.toFixed(2));
+        }
+
+        chart = new Chart(graficaCanvas.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: posiciones,
+                datasets: [{
+                    label: 'Velocidad (m/s) vs Posición (m)',
+                    data: velocidades,
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.1)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Posición a lo largo del plano (m)'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Velocidad (m/s)'
+                        },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Event listeners
+    ejercicioSel.addEventListener('change', () => {
+        loadParams();
+        limpiarResultados();
+    });
+
+    resolverBtn.addEventListener('click', resolverEjercicio);
+
+    // Inicialización
+    loadParams();
+</script>
+</body>
+</html>
